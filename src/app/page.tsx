@@ -107,42 +107,27 @@ const Page = () => {
     fetchLatest()
   }, [])
 
+  const clearSearch = () => {
+    searchAbortRef.current?.abort()
+    searchAbortRef.current = null
+    setQuery('')
+    setError('')
+    setResults([])
+    setSearchPerformed(false)
+    setLoading(false)
+  }
+
   const searchAnime = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const trimmed = query.trim()
 
     if (!trimmed) {
-      searchAbortRef.current?.abort()
-      setError('')
-      setResults([])
-      setSearchPerformed(false)
-      setLoading(false)
+      clearSearch()
       return
     }
 
     await performSearch(trimmed)
   }
-
-  useEffect(() => {
-    const trimmed = query.trim()
-
-    if (!trimmed) {
-      searchAbortRef.current?.abort()
-      setError('')
-      setResults([])
-      setSearchPerformed(false)
-      setLoading(false)
-      return
-    }
-
-    const timer = window.setTimeout(() => {
-      performSearch(trimmed)
-    }, 500)
-
-    return () => {
-      window.clearTimeout(timer)
-    }
-  }, [query])
 
   return (
     <main className="home-page">
@@ -160,16 +145,15 @@ const Page = () => {
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search anime titles, characters, or series"
               aria-label="Search anime"
-              disabled={loading}
+              readOnly={loading || searchPerformed}
             />
-            {query && (
-              <button
-                type="button"
-                className="search-clear"
-                aria-label="Clear search"
-                onClick={() => setQuery('')}
-              >
-                ×
+            {searchPerformed ? (
+              <button type="button" className="search-submit" onClick={clearSearch}>
+                Clear
+              </button>
+            ) : (
+              <button type="submit" className="search-submit" disabled={loading || !query.trim()}>
+                {loading ? <span className="button-spinner" aria-hidden="true" /> : 'Search'}
               </button>
             )}
           </form>

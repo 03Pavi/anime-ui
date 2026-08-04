@@ -3,6 +3,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { API_URL } from '@/config/api'
 import { SkeletonPlayer } from '@/shared/ui'
+import { useAppSelector } from '@/store/hooks'
 
 type StreamItem = {
   quality: string
@@ -23,7 +24,7 @@ const PlayerPage = () => {
   const [player, setPlayer] = useState<PlayerPayload>({})
   const [selectedStream, setSelectedStream] = useState<StreamItem | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!episodeUrl) {
