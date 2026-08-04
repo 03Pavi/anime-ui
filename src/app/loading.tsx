@@ -1,16 +1,12 @@
-import { SkeletonCard } from '@/shared/ui'
-
 const Loading = () => {
   return (
-    <div className="page-loader">
-      <div className="loading-animation">
-        <div className="loader-icon" />
-        <div className="loading-skeletons">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <SkeletonCard key={index} />
-          ))}
-        </div>
+    <div className="page-loader splash-screen">
+      <div className="splash-logo">
+        {'Sanime'.split('').map((letter, index) => (
+          <span key={letter + index}>{letter}</span>
+        ))}
       </div>
+      <p className="splash-subtitle">Loading your anime world…</p>
     </div>
   )
 }
