@@ -1,0 +1,16 @@
+{
+  "name": "Sanime",
+  "short_name": "Sanime",
+  "description": "Anime browser powered by your scraper API.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07101f",
+  "theme_color": "#07101f",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

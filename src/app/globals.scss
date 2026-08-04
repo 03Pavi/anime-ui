@@ -1,0 +1,866 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-base: #04070f;
+  --bg-card: rgba(10, 17, 30, 0.95);
+  --bg-panel: rgba(255, 255, 255, 0.05);
+  --text-primary: #f7f8ff;
+  --text-secondary: #b9c3ff;
+  --accent-red: #f54059;
+  --accent-blue: #4f7bff;
+  --accent-green: #8bf161;
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow: 0 35px 80px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--text-primary);
+  background: radial-gradient(circle at top left, rgba(79, 123, 255, 0.18), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(245, 64, 89, 0.12), transparent 18%),
+    linear-gradient(180deg, #03070f 0%, #07101f 100%);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.anime-shell {
+  width: min(1180px, calc(100% - 2.5rem));
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0 1.5rem;
+}
+
+.top-nav .brand {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.top-nav nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.top-nav a {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.top-nav a:hover {
+  color: #fff;
+}
+
+.nav-signup {
+  padding: 0.85rem 1.35rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+  color: #03070f;
+  font-weight: 700;
+}
+
+.hero-banner {
+  position: relative;
+  width: 100%;
+  min-height: 72vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  background-image: linear-gradient(180deg, rgba(3, 6, 14, 0.72), rgba(3, 6, 14, 0.72)),
+    image-set(
+      url('https://static.crunchyroll.com/cr-acquisition/assets/img/start/hero/india/background-desktop@2x.jpg') 2x,
+      url('https://static.crunchyroll.com/cr-acquisition/assets/img/start/hero/india/background-desktop@3x.jpg') 3x
+    );
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.75));
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  width: min(100%, 760px);
+  text-align: center;
+}
+
+.hero-content .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-blue);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-content h1 {
+  margin: 1rem 0 1.2rem;
+  font-size: clamp(3rem, 5vw, 4.2rem);
+  line-height: 1.05;
+  font-weight: 800;
+  max-width: 680px;
+  text-align: center;
+  background: linear-gradient(120deg, #f54059 0%, #ff9b4a 35%, #4f7bff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-content h1 span {
+  display: block;
+}
+
+.hero-content h1 .hero-title-line {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hero-content h1 .hero-title-subline {
+  margin-top: 0.3rem;
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hero-content p {
+  display: none;
+}
+
+.hero-search-bar {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.hero-search-bar input {
+  flex: 1;
+  min-height: 3.75rem;
+  border: none;
+  border-radius: 999px 0 0 999px;
+  padding: 0 1.5rem;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.hero-search-bar button {
+  min-width: 160px;
+  border: none;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.hero-search-bar button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.search-panel {
+  margin-top: 0;
+}
+
+.latest-section {
+  margin-top: 2.5rem;
+}
+
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  font-size: 2rem;
+}
+
+.section-header p {
+  color: var(--text-secondary);
+}
+
+.grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.anime-card {
+  display: block;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.anime-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 123, 255, 0.7);
+}
+
+.card-image {
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.card-content {
+  padding: 1.25rem;
+}
+
+.card-content h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.15rem;
+}
+
+.card-content p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.status-message {
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.status-message.error {
+  color: #ff8aa1;
+}
+
+.player-shell {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 1.75rem;
+  margin-top: 2rem;
+}
+
+.player-frame {
+  overflow: hidden;
+  border-radius: 1.75rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+}
+
+.video-player {
+  width: 100%;
+  min-height: 440px;
+  background: #000;
+}
+
+.player-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.player-meta,
+.quality-controls {
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.player-meta h2 {
+  margin-bottom: 0.9rem;
+  font-size: 1.9rem;
+}
+
+.player-meta p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.quality-controls h3 {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.quality-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.quality-button {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  padding: 0.95rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.quality-button:hover {
+  transform: translateY(-1px);
+}
+
+.quality-button.selected {
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  color: #fff;
+  border-color: transparent;
+}
+
+.latest-shell {
+  padding-top: 1rem;
+}
+
+.latest-header {
+  margin-bottom: 2rem;
+}
+
+.latest-header .eyebrow {
+  margin-bottom: 1rem;
+}
+
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.4rem;
+}
+
+.latest-card {
+  display: grid;
+  grid-template-rows: 220px auto;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.latest-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 123, 255, 0.55);
+}
+
+.latest-card-image {
+  background-size: cover;
+  background-position: center;
+}
+
+.latest-card-content {
+  padding: 1.25rem;
+}
+
+.latest-card-content h3 {
+  margin-bottom: 0.85rem;
+  font-size: 1.15rem;
+}
+
+.latest-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+.latest-meta span {
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.latest-genres {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.trending-block {
+  margin-top: 2.5rem;
+}
+
+.section-label {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: rgba(79, 123, 255, 0.13);
+  color: var(--accent-blue);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.trending-card {
+  border-color: rgba(245, 64, 89, 0.35);
+}
+
+@media (max-width: 900px) {
+  .top-nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-banner {
+    padding: 3rem 1.5rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .anime-shell {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar button {
+    width: 100%;
+  }
+
+  .hero-copy h1 {
+    font-size: 2.75rem;
+  }
+
+  .season-card-horizontal {
+    flex-direction: column;
+  }
+
+  .season-card-thumb {
+    width: 100%;
+    height: 180px;
+  }
+
+  .episode-row {
+    flex-direction: column;
+  }
+
+  .episode-thumb {
+    width: 100%;
+    height: 160px;
+  }
+
+  .episode-number-badge {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+}
+
+/* Seasons Page */
+.seasons-page .page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.seasons-page .page-header-content {
+  flex: 1;
+}
+
+.seasons-page .page-header h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.seasons-page .page-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 42rem;
+}
+
+.seasons-page .route-label {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.season-card-horizontal {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.season-card-horizontal:hover {
+  transform: translateY(-3px);
+  border-color: rgba(79, 123, 255, 0.5);
+}
+
+.season-card-thumb {
+  width: 200px;
+  min-height: 260px;
+  border-radius: 1rem;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.season-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+}
+
+.season-card-body h3 {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.season-card-meta {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.season-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(79, 123, 255, 0.15);
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.season-badge.episodes {
+  background: rgba(245, 64, 89, 0.12);
+  color: var(--accent-red);
+}
+
+.season-card-body .season-synopsis {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.season-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  flex-shrink: 0;
+  align-self: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.season-card-horizontal:hover .season-card-arrow {
+  background: var(--accent-blue);
+  transform: translateX(4px);
+}
+
+.seasons-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Episodes Page */
+.episodes-page .page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.episodes-page .page-header-content {
+  flex: 1;
+}
+
+.episodes-page .page-header h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.episodes-page .page-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 42rem;
+}
+
+.episodes-page .route-label {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.episode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.episode-row {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.episode-row:hover {
+  transform: translateX(4px);
+  border-color: rgba(79, 123, 255, 0.45);
+}
+
+.episode-thumb-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.episode-thumb {
+  width: 180px;
+  height: 120px;
+  border-radius: 0.9rem;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.episode-number-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.75rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: rgba(4, 7, 15, 0.85);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.episode-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+  min-width: 0;
+}
+
+.episode-info h3 {
+  font-size: 1.05rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.episode-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.episode-meta span {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.episode-info .episode-synopsis {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.episode-play-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  color: #fff;
+  flex-shrink: 0;
+  align-self: center;
+  transition: transform 0.2s ease;
+}
+
+.episode-row:hover .episode-play-icon {
+  transform: scale(1.08);
+}
+
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  padding: 2rem 0;
+}
+
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 60rem;
+}
+
+.loader-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  animation: loader-pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes loader-pulse {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.loading-skeletons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.home-page .home-search-section {
+  margin-top: 2rem;
+}
+
+.home-page .search-panel {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .loading-skeletons {
+    grid-template-columns: 1fr;
+  }
+}

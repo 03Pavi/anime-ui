@@ -1,0 +1,218 @@
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 0.75rem;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  display: grid;
+  grid-template-rows: 220px auto;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skeleton-card-image {
+  height: 220px;
+  width: 100%;
+  border-radius: 0;
+}
+
+.skeleton-card-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-card-title {
+  height: 1.4rem;
+  width: 75%;
+}
+
+.skeleton-card-text {
+  height: 0.9rem;
+  width: 100%;
+}
+
+.skeleton-card-text.short {
+  width: 55%;
+}
+
+.skeleton-episode-row {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+}
+
+.skeleton-episode-thumb {
+  width: 180px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 0.9rem;
+}
+
+.skeleton-episode-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.skeleton-episode-title {
+  height: 1.2rem;
+  width: 65%;
+}
+
+.skeleton-episode-text {
+  height: 0.85rem;
+  width: 100%;
+}
+
+.skeleton-episode-text.short {
+  width: 45%;
+}
+
+.skeleton-episode-play {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-season-card {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(9, 15, 29, 0.95), rgba(12, 20, 38, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+}
+
+.skeleton-season-thumb {
+  width: 200px;
+  min-height: 260px;
+  flex-shrink: 0;
+  border-radius: 1rem;
+}
+
+.skeleton-season-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-season-title {
+  height: 1.6rem;
+  width: 70%;
+}
+
+.skeleton-season-badge {
+  height: 1.8rem;
+  width: 30%;
+  border-radius: 999px;
+}
+
+.skeleton-season-text {
+  height: 0.9rem;
+  width: 100%;
+}
+
+.skeleton-season-text.short {
+  width: 50%;
+}
+
+.skeleton-season-arrow {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-player {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.skeleton-player-frame {
+  flex: 1 1 320px;
+  height: 320px;
+  border-radius: 1.25rem;
+}
+
+.skeleton-player-sidebar {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.skeleton-player-title {
+  height: 1.5rem;
+  width: 80%;
+}
+
+.skeleton-player-text {
+  height: 0.9rem;
+  width: 100%;
+}
+
+.skeleton-player-text.short {
+  width: 60%;
+}
+
+.skeleton-quality-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.skeleton-quality-button {
+  height: 2.5rem;
+  width: 5.5rem;
+  border-radius: 999px;
+}
+
+.skeleton-quality-button.short {
+  width: 4.5rem;
+}
+
+@media (max-width: 900px) {
+  .skeleton-season-card {
+    flex-direction: column;
+  }
+
+  .skeleton-season-thumb {
+    width: 100%;
+    min-height: 180px;
+  }
+
+  .skeleton-episode-row {
+    flex-direction: column;
+  }
+
+  .skeleton-episode-thumb {
+    width: 100%;
+    height: 160px;
+  }
+}

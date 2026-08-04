@@ -1,0 +1,130 @@
+'use client'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { API_URL } from '@/config/api'
+import { SkeletonEpisodeRow } from '@/shared/ui'
+
+type EpisodeItem = {
+  title: string
+  url: string
+  number?: string | number
+  synopsis?: string
+  thumbnail?: string
+}
+
+const EpisodesPage = () => {
+  const searchParams = useSearchParams()
+  const seasonUrl = searchParams.get('url') || ''
+  const seasonTitle = searchParams.get('title') || ''
+  const [episodes, setEpisodes] = useState<EpisodeItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!seasonUrl) {
+      return
+    }
+
+    const fetchEpisodes = async () => {
+      setLoading(true)
+      setError('')
+
+      try {
+        const res = await fetch(`${API_URL}/api/episodes?url=${encodeURIComponent(seasonUrl)}`)
+        if (!res.ok) {
+          throw new Error(`Unable to load episodes: ${res.status}`)
+        }
+
+        const payload = await res.json()
+        const items = payload.data || payload.results || payload.items || []
+
+        setEpisodes(
+          items.map((item: any) => ({
+            title: item.title || item.name || item.episode || 'Episode',
+            url: item.url || item.link || item.page || '',
+            number: item.number || item.episodeNumber || item.id,
+            synopsis: item.description || item.synopsis || item.summary || '',
+            thumbnail: item.thumbnail || item.image || item.poster,
+          }))
+        )
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : 'Unable to load episodes.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEpisodes()
+  }, [seasonUrl])
+
+  return (
+    <main className="anime-shell page-shell episodes-page">
+      <div className="page-header">
+        <div className="page-header-content">
+          {seasonTitle && <span className="eyebrow">Episodes</span>}
+          <h1>{seasonTitle ? `${seasonTitle}` : 'Pick an episode'}</h1>
+          <p>Choose an episode below to open the player and start streaming.</p>
+        </div>
+        <Link href={`/seasons?url=${encodeURIComponent(seasonUrl)}`} className="secondary-button">
+          Back to seasons
+        </Link>
+      </div>
+
+      {loading && (
+        <div className="episode-list">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SkeletonEpisodeRow key={index} />
+          ))}
+        </div>
+      )}
+      {error && <p className="status-message error">{error}</p>}
+
+      {!loading && !error && !seasonUrl && (
+        <p className="status-message">Missing season URL. Please go back and choose a season first.</p>
+      )}
+
+      {!loading && !error && seasonUrl && episodes.length === 0 && (
+        <p className="status-message">No episodes found for this season yet.</p>
+      )}
+
+      {!loading && !error && episodes.length > 0 && (
+        <div className="episode-list">
+          {episodes.map((episode, index) => (
+            <Link
+              key={`${episode.title}-${index}`}
+              href={`/player?url=${encodeURIComponent(episode.url)}`}
+              className="episode-row"
+            >
+              <div className="episode-thumb-wrap">
+                <div
+                  className="episode-thumb"
+                  style={{ backgroundImage: `url(${episode.thumbnail || '/logo.svg'})` }}
+                />
+                <span className="episode-number-badge">
+                  {episode.number ?? index + 1}
+                </span>
+              </div>
+              <div className="episode-info">
+                <h3>{episode.title}</h3>
+                <div className="episode-meta">
+                  {episode.number != null && <span>Episode {episode.number}</span>}
+                </div>
+                {episode.synopsis && (
+                  <p className="episode-synopsis">{episode.synopsis}</p>
+                )}
+              </div>
+              <div className="episode-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </main>
+  )
+}
+
+export default EpisodesPage
