@@ -170,23 +170,40 @@ a {
 }
 
 .hero-search-bar {
+  position: relative;
   margin: 0 auto;
   width: 100%;
   max-width: 640px;
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
 }
 
 .hero-search-bar input {
-  flex: 1;
-  min-height: 3.75rem;
+  width: 100%;
+  min-height: 4rem;
   border: none;
-  border-radius: 999px 0 0 999px;
-  padding: 0 1.5rem;
+  border-radius: 999px;
+  padding: 0 2.5rem 0 1.75rem;
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   outline: none;
+}
+
+.hero-search-bar .search-clear {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.hero-search-bar .search-clear:hover {
+  color: var(--text-secondary);
 }
 
 .hero-search-bar input:disabled {
