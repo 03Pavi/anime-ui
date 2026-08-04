@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: "Crunchyroll-inspired anime browser for search and discovery.",
   themeColor: "#07101f",
   icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
+    icon: "/icon/hqdefault.jpg",
+    apple: "/icon/hqdefault.jpg",
   },
   manifest: "/manifest.json",
 };
