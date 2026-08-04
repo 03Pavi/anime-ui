@@ -119,8 +119,15 @@ const Page = () => {
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search anime titles, characters, or series"
               aria-label="Search anime"
+              disabled={loading}
             />
-            <button type="submit">Search</button>
+            <button type="submit" disabled={loading}>
+              {loading ? (
+                <span className="button-spinner" aria-hidden="true" />
+              ) : (
+                'Search'
+              )}
+            </button>
           </form>
         </div>
       </section>
