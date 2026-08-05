@@ -123,6 +123,21 @@ const PlayerPage = () => {
                 ))}
               </div>
             </div>
+            {selectedStream && (
+              <div className="quality-controls">
+                <h3>Download</h3>
+                <a
+                  href={selectedStream.url}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="quality-button selected"
+                  style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none' }}
+                >
+                  Download {selectedStream.quality}
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}
