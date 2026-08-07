@@ -11,11 +11,32 @@ type StreamItem = {
   label?: string
 }
 
+type RelatedEpisode = {
+  title: string
+  url: string
+  image?: string
+  type?: string
+  genres?: string[]
+  status?: string
+}
+
+type EpisodeDetails = {
+  title?: string
+  poster?: string
+  episodeNumber?: string
+  type?: string
+  language?: string
+  seasonUrl?: string
+  seasonTitle?: string
+}
+
 type PlayerPayload = {
   title?: string
   poster?: string
   streams?: StreamItem[]
   description?: string
+  episodeDetails?: EpisodeDetails
+  relatedEpisodes?: RelatedEpisode[]
 }
 
 const PlayerPage = () => {
@@ -55,6 +76,15 @@ const PlayerPage = () => {
           poster: payload.poster || payload.image || '',
           description: payload.description || payload.summary || '',
           streams: normalizedStreams,
+          episodeDetails: (payload.episodeDetails || payload.data?.episodeDetails || undefined),
+          relatedEpisodes: (payload.relatedEpisodes || payload.data?.relatedEpisodes || []).map((item: any) => ({
+            title: item.title || 'Untitled',
+            url: item.url || '#',
+            image: item.image || item.thumbnail || item.poster || '/logo.svg',
+            type: item.type || '',
+            genres: item.genres || [],
+            status: item.status || '',
+          })),
         })
 
         if (normalizedStreams.length > 0) {
@@ -73,11 +103,31 @@ const PlayerPage = () => {
   return (
     <main className="anime-shell page-shell">
       <div className="page-header">
-        <div>
-          <span className="eyebrow">Player</span>
-          <h1>{player.title || 'Episode Player'}</h1>
-           <p>Choose a stream quality and play the episode directly inside Sanime.</p>
-        </div>
+
+      {!loading && !error && player.episodeDetails && (
+        <section className="episode-details">
+          <div className="episode-details-card">
+            <div className="episode-details-poster" style={{ backgroundImage: `url(${player.episodeDetails.poster || '/logo.svg'})` }} />
+            <div className="episode-details-info">
+              <span className="eyebrow">Now Playing</span>
+              <h2>{player.episodeDetails.title}</h2>
+              <div className="episode-details-meta">
+                {player.episodeDetails.episodeNumber && (
+                  <span className="episode-detail-badge">Episode {player.episodeDetails.episodeNumber}</span>
+                )}
+                {player.episodeDetails.language && (
+                  <span className="episode-detail-badge">{player.episodeDetails.language}</span>
+                )}
+              </div>
+              {player.episodeDetails.seasonTitle && (
+                <a href={player.episodeDetails.seasonUrl} className="episode-season-link">
+                  {player.episodeDetails.seasonTitle}
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       </div>
 
       {loading && <SkeletonPlayer />}
@@ -104,10 +154,6 @@ const PlayerPage = () => {
             />
           </div>
           <div className="player-sidebar">
-            <div className="player-meta">
-              <h2>{player.title}</h2>
-              {player.description && <p>{player.description}</p>}
-            </div>
             <div className="quality-controls">
               <h3>Quality</h3>
               <div className="quality-list">
@@ -123,7 +169,7 @@ const PlayerPage = () => {
                 ))}
               </div>
             </div>
-            {selectedStream && (
+            {/* {selectedStream && (
               <div className="quality-controls">
                 <h3>Download</h3>
                 <a
@@ -137,9 +183,38 @@ const PlayerPage = () => {
                   Download {selectedStream.quality}
                 </a>
               </div>
-            )}
+            )} */}
           </div>
         </div>
+      )}
+
+      {!loading && !error && player.relatedEpisodes && player.relatedEpisodes.length > 0 && (
+        <section className="related-episodes">
+          <div className="section-header">
+            <div>
+              <h2>Related</h2>
+              <p>More episodes you might like</p>
+            </div>
+          </div>
+          <div className="related-grid">
+         {player.relatedEpisodes.filter(item=>item?.type!=="Movie")?.map((episode, index) => (
+              <a
+                key={`${episode.title}-${index}`}
+                href={`/player?url=${encodeURIComponent(episode.url)}`}
+                className="related-card"
+              >
+                <div className="related-image" style={{ backgroundImage: `url(${episode.image})` }} />
+                <div className="related-content">
+                  <h3>{episode.title}</h3>
+                  <div className="related-meta">
+                    {episode.type && <span>{episode.type}</span>}
+                    {episode.status && <span>{episode.status}</span>}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
       )}
     </main>
   )

@@ -110,9 +110,6 @@ const EpisodesPage = () => {
                     </span>
                   </div>
                 )}
-                <span className="episode-number-badge">
-                  {episode.number ?? index + 1}
-                </span>
               </div>
               <div className="episode-info">
                 <h3>{episode.title}</h3>

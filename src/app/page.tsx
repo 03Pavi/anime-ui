@@ -119,7 +119,7 @@ const Page = () => {
       setQuery(q)
       performSearch(q, page)
     }
-  }, [searchParams, performSearch])
+  }, [performSearch])
 
   const handlePageChange = async (page: number) => {
     if (page === currentPage || !query.trim()) return
@@ -203,7 +203,6 @@ const Page = () => {
               onChange={(event) => {
                 const value = event.target.value
                 setQuery(value)
-                syncUrlQuery(value, 1)
               }}
               placeholder="Search anime titles, characters, or series"
               aria-label="Search anime"
