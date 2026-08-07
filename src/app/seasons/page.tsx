@@ -17,6 +17,7 @@ const SeasonsPage = () => {
   const searchParams = useSearchParams()
   const animeUrl = searchParams.get('url') || ''
   const animeTitle = searchParams.get('title') || ''
+  const query = searchParams.get('q') || ''
   const [seasons, setSeasons] = useState<SeasonItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -66,7 +67,7 @@ const SeasonsPage = () => {
           <h1>{animeTitle ? `${animeTitle}` : 'Choose a season'}</h1>
           <p>Select a season to browse its episodes and start watching.</p>
         </div>
-        <Link href={animeUrl ? `/seasons?url=${encodeURIComponent(animeUrl)}` : '/'} className="secondary-button">
+        <Link href={query ? `/?q=${encodeURIComponent(query)}` : '/'} className="secondary-button">
           Back
         </Link>
       </div>
@@ -89,12 +90,12 @@ const SeasonsPage = () => {
       )}
 
       {!loading && !error && seasons.length > 0 && (
-        <div className="seasons-grid">
+        <div className="seasons-grid seasons-card-grid">
           {seasons.map((season, index) => (
             <Link
               key={`${season.title}-${index}`}
               href={`/episodes?url=${encodeURIComponent(season.url)}&title=${encodeURIComponent(season.title)}`}
-              className="season-card-horizontal"
+              className="season-card"
             >
               <div
                 className="season-card-thumb"
@@ -110,11 +111,6 @@ const SeasonsPage = () => {
                 {season.synopsis && (
                   <p className="season-synopsis">{season.synopsis}</p>
                 )}
-              </div>
-              <div className="season-card-arrow">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
               </div>
             </Link>
           ))}

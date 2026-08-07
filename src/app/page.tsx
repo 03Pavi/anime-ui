@@ -2,6 +2,7 @@
 import { SwitchLanguage } from '@/shared/ui/switch-language'
 import { SkeletonCard } from '@/shared/ui'
 import { useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { API_URL } from '@/config/api'
 import Link from 'next/link'
 
@@ -9,6 +10,8 @@ type AnimeItem = {
   title: string
   url: string
   thumbnail?: string
+  type?: string
+  genres?: string[]
   synopsis?: string
 }
 
@@ -27,22 +30,49 @@ const Page = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [searchPerformed, setSearchPerformed] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [paginationPages, setPaginationPages] = useState<{ page: number; isCurrent: boolean }[]>([])
   const [latest, setLatest] = useState<LatestAnime[]>([])
   const [latestLoading, setLatestLoading] = useState(true)
   const [latestError, setLatestError] = useState('')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const initialSearchProcessedRef = useRef(false)
   const searchAbortRef = useRef<AbortController | null>(null)
 
-  const performSearch = async (searchTerm: string) => {
+  const syncUrlQuery = (value: string, page = 1) => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()))
+
+    if (value.trim()) {
+      params.set('q', value.trim())
+    } else {
+      params.delete('q')
+    }
+
+    if (page > 1) {
+      params.set('page', String(page))
+    } else {
+      params.delete('page')
+    }
+
+    const queryString = params.toString()
+    const pathname = window.location.pathname
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname)
+  }
+
+  const performSearch = async (searchTerm: string, page = 1) => {
     setLoading(true)
     setError('')
     setSearchPerformed(true)
+    setCurrentPage(page)
 
     searchAbortRef.current?.abort()
     const controller = new AbortController()
     searchAbortRef.current = controller
 
     try {
-      const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(searchTerm)}`, {
+      const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(searchTerm)}&page=${page}`, {
         signal: controller.signal,
       })
       if (!response.ok) {
@@ -51,6 +81,7 @@ const Page = () => {
 
       const payload = await response.json()
       const animeResults = Array.isArray(payload) ? payload : payload.results || payload.data || []
+      const pagination = payload.pagination
 
       if (controller.signal.aborted) return
 
@@ -60,17 +91,39 @@ const Page = () => {
           url: item.url || item.page || item.link || '#',
           thumbnail: item.thumbnail || item.image || item.cover,
           synopsis: item.synopsis || item.description || '',
+          type: item.type || '',
+          genres: item.genres || [],
         }))
       )
+      setTotalPages(pagination?.totalPages ?? 1)
+      setPaginationPages(pagination?.pages ?? [])
     } catch (fetchError) {
       if (controller.signal.aborted) return
       setError(fetchError instanceof Error ? fetchError.message : 'Unable to search anime')
       setResults([])
+      setTotalPages(1)
+      setPaginationPages([])
     } finally {
       if (!controller.signal.aborted) {
         setLoading(false)
       }
     }
+  }
+
+  useEffect(() => {
+    const q = searchParams.get('q')?.trim() || ''
+    const page = Number(searchParams.get('page') ?? '1') || 1
+
+    if (q && !initialSearchProcessedRef.current) {
+      initialSearchProcessedRef.current = true
+      setQuery(q)
+      performSearch(q, page)
+    }
+  }, [searchParams, performSearch])
+
+  const handlePageChange = async (page: number) => {
+    if (page === currentPage || !query.trim()) return
+    await performSearch(query.trim(), page)
   }
 
   useEffect(() => {
@@ -115,6 +168,10 @@ const Page = () => {
     setResults([])
     setSearchPerformed(false)
     setLoading(false)
+    setCurrentPage(1)
+    setTotalPages(1)
+    setPaginationPages([])
+    router.replace(window.location.pathname)
   }
 
   const searchAnime = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -126,7 +183,8 @@ const Page = () => {
       return
     }
 
-    await performSearch(trimmed)
+    syncUrlQuery(trimmed, 1)
+    await performSearch(trimmed, 1)
   }
 
   return (
@@ -142,10 +200,14 @@ const Page = () => {
           <form className="hero-search-bar" onSubmit={searchAnime}>
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value
+                setQuery(value)
+                syncUrlQuery(value, 1)
+              }}
               placeholder="Search anime titles, characters, or series"
               aria-label="Search anime"
-              readOnly={loading || searchPerformed}
+              readOnly={loading}
             />
             {searchPerformed ? (
               <button type="button" className="search-submit" onClick={clearSearch}>
@@ -184,21 +246,75 @@ const Page = () => {
             {error && <p className="status-message error">{error}</p>}
 
             {!loading && !error && results.length > 0 && (
-              <div className="grid-list">
-                {results.map((anime, index) => (
-                  <Link
-                    key={`${anime.title}-${index}`}
-                    href={`/seasons?url=${encodeURIComponent(anime.url)}`}
-                    className="anime-card"
-                  >
-                    <div className="card-image" style={{ backgroundImage: `url(${anime.thumbnail || '/logo.svg'})` }} />
-                    <div className="card-content">
-                      <h3>{anime.title}</h3>
-                      <p>{anime.synopsis || 'Explore the anime page for more details.'}</p>
+              <>
+                <div className="grid-list">
+                  {results.map((anime, index) => (
+                    <Link
+                      key={`${anime.title}-${index}`}
+                      href={`/seasons?url=${encodeURIComponent(anime.url)}&q=${encodeURIComponent(query)}`}
+                      className="anime-card"
+                    >
+                      <div className="card-image" style={{ backgroundImage: `url(${anime.thumbnail || '/logo.svg'})` }} />
+                      <div className="card-content">
+                        <h3>{anime.title}</h3>
+                        <p>
+                          {anime.type || anime.genres?.length
+                            ? [anime.type, ...(anime.genres || [])].filter(Boolean).join(' · ')
+                            : 'Explore the anime page for more details.'}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="pagination-bar">
+                    <button
+                      type="button"
+                      className="pagination-nav-button"
+                      disabled={currentPage === 1 || loading}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                      Previous
+                    </button>
+
+                    <div className="pagination-buttons">
+                      {paginationPages.length > 0
+                        ? paginationPages.map((page) => (
+                            <button
+                              key={page.page}
+                              type="button"
+                              className={`pagination-button ${page.isCurrent ? 'active' : ''}`}
+                              disabled={page.isCurrent || loading}
+                              onClick={() => handlePageChange(page.page)}
+                            >
+                              {page.page}
+                            </button>
+                          ))
+                        : Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button
+                              key={pageNumber}
+                              type="button"
+                              className={`pagination-button ${pageNumber === currentPage ? 'active' : ''}`}
+                              disabled={pageNumber === currentPage || loading}
+                              onClick={() => handlePageChange(pageNumber)}
+                            >
+                              {pageNumber}
+                            </button>
+                          ))}
                     </div>
-                  </Link>
-                ))}
-              </div>
+
+                    <button
+                      type="button"
+                      className="pagination-nav-button"
+                      disabled={currentPage === totalPages || loading}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
             {!loading && !error && results.length === 0 && (

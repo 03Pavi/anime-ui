@@ -5,13 +5,14 @@ const JIKAN_BASE = 'https://api.jikan.moe/v4'
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const query = url.searchParams.get('q')?.trim()
+  const page = Number(url.searchParams.get('page') ?? '1') || 1
 
   if (!query) {
     return NextResponse.json({ error: 'Missing search query' }, { status: 400 })
   }
 
   try {
-    const response = await fetch(`${JIKAN_BASE}/anime?q=${encodeURIComponent(query)}&limit=16`)
+    const response = await fetch(`${JIKAN_BASE}/anime?q=${encodeURIComponent(query)}&limit=16&page=${page}`)
     if (!response.ok) {
       throw new Error(`Search provider responded with ${response.status}`)
     }
@@ -27,10 +28,19 @@ export async function GET(request: Request) {
             item.trailer?.images?.large_image_url ||
             '/logo.svg',
           synopsis: item.synopsis || item.background || '',
+          type: item.type || '',
+          genres: Array.isArray(item.genres)
+            ? item.genres.map((genre: any) => genre?.name || genre).filter(Boolean)
+            : [],
         }))
       : []
 
-    return NextResponse.json({ data: results })
+    const responseBody: any = { data: results }
+    if (payload.pagination) {
+      responseBody.pagination = payload.pagination
+    }
+
+    return NextResponse.json(responseBody)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to fetch search results'
     return NextResponse.json({ error: message }, { status: 500 })

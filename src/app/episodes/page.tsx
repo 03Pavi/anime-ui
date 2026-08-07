@@ -9,6 +9,8 @@ type EpisodeItem = {
   title: string
   url: string
   number?: string | number
+  language?: string
+  releaseDate?: string
   synopsis?: string
   thumbnail?: string
 }
@@ -43,7 +45,9 @@ const EpisodesPage = () => {
           items.map((item: any) => ({
             title: item.title || item.name || item.episode || 'Episode',
             url: item.url || item.link || item.page || '',
-            number: item.number || item.episodeNumber || item.id,
+            number: item.number || item.episodeNumber || item.episode || item.id,
+            language: item.language || item.lang || '',
+            releaseDate: item.releaseDate || item.airDate || item.date || '',
             synopsis: item.description || item.synopsis || item.summary || '',
             thumbnail: item.thumbnail || item.image || item.poster,
           }))
@@ -66,9 +70,6 @@ const EpisodesPage = () => {
           <h1>{seasonTitle ? `${seasonTitle}` : 'Pick an episode'}</h1>
           <p>Choose an episode below to open the player and start streaming.</p>
         </div>
-        <Link href={`/seasons?url=${encodeURIComponent(seasonUrl)}`} className="secondary-button">
-          Back to seasons
-        </Link>
       </div>
 
       {loading && (
@@ -109,6 +110,8 @@ const EpisodesPage = () => {
                 <h3>{episode.title}</h3>
                 <div className="episode-meta">
                   {episode.number != null && <span>Episode {episode.number}</span>}
+                  {episode.language && <span>{episode.language}</span>}
+                  {episode.releaseDate && <span>{episode.releaseDate}</span>}
                 </div>
                 {episode.synopsis && (
                   <p className="episode-synopsis">{episode.synopsis}</p>
