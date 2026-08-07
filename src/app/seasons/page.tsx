@@ -13,12 +13,32 @@ type SeasonItem = {
   thumbnail?: string
 }
 
+type AnimeDetail = {
+  title?: string
+  alterTitle?: string
+  cover?: string
+  poster?: string
+  rating?: string
+  trailerUrl?: string
+  status?: string
+  network?: string
+  studio?: string
+  released?: string
+  duration?: string
+  season?: string
+  country?: string
+  type?: string
+  episodes?: string
+  genres?: string[]
+  synopsis?: string
+}
+
 const SeasonsPage = () => {
   const searchParams = useSearchParams()
   const animeUrl = searchParams.get('url') || ''
-  const animeTitle = searchParams.get('title') || ''
   const query = searchParams.get('q') || ''
   const [seasons, setSeasons] = useState<SeasonItem[]>([])
+  const [detail, setDetail] = useState<AnimeDetail | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -39,7 +59,9 @@ const SeasonsPage = () => {
 
         const payload = await res.json()
         const items = payload.data || payload.results || payload.items || []
+        const animeDetail = payload.detail || null
 
+        setDetail(animeDetail)
         setSeasons(
           items.map((item: any) => ({
             title: item.title || item.name || item.season || 'Season',
@@ -59,12 +81,45 @@ const SeasonsPage = () => {
     fetchSeasons()
   }, [animeUrl])
 
+  const displayTitle = detail?.title || detail?.alterTitle || 'Anime Details'
+  const displayPoster = detail?.poster || detail?.cover || '/logo.svg'
+  const displayGenres = detail?.genres || []
+
   return (
     <main className="anime-shell page-shell seasons-page">
+      {detail && (
+        <section className="anime-hero">
+          <div className="anime-hero-backdrop" style={{ backgroundImage: `url(${detail.cover || detail.poster || '/logo.svg'})` }} />
+          <div className="anime-hero-content">
+            <div className="anime-hero-poster">
+              <img src={displayPoster} alt={displayTitle} />
+            </div>
+            <div className="anime-hero-info">
+              <span className="eyebrow">Anime Details</span>
+              <h1>{displayTitle}</h1>
+              <div className="anime-hero-meta">
+                {detail.type && <span className="anime-meta-badge">{detail.type}</span>}
+                {detail.rating && <span className="anime-meta-badge rating">⭐ {detail.rating}</span>}
+                {detail.released && <span className="anime-meta-badge">{detail.released}</span>}
+                {detail.duration && <span className="anime-meta-badge">{detail.duration}</span>}
+                {detail.status && <span className="anime-meta-badge">{detail.status}</span>}
+              </div>
+              {displayGenres.length > 0 && (
+                <div className="anime-hero-genres">
+                  {displayGenres.map((genre) => (
+                    <span key={genre} className="genre-badge">{genre}</span>
+                  ))}
+                </div>
+              )}
+              {detail.synopsis && <p className="anime-hero-synopsis">{detail.synopsis}</p>}
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className="page-header">
         <div className="page-header-content">
-          {animeTitle && <span className="eyebrow">Seasons</span>}
-          <h1>{animeTitle ? `${animeTitle}` : 'Choose a season'}</h1>
+          <h1>{detail?.title ? 'Seasons' : 'Choose a season'}</h1>
           <p>Select a season to browse its episodes and start watching.</p>
         </div>
         <Link href={query ? `/?q=${encodeURIComponent(query)}` : '/'} className="secondary-button">

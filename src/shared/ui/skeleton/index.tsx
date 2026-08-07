@@ -36,7 +36,6 @@ export const SkeletonEpisodeRow = ({ className = '' }: SkeletonEpisodeRowProps) 
       <Skeleton className="skeleton-episode-text" />
       <Skeleton className="skeleton-episode-text short" />
     </div>
-    <Skeleton className="skeleton-episode-play" />
   </div>
 )
 
@@ -53,7 +52,6 @@ export const SkeletonSeasonCard = ({ className = '' }: SkeletonSeasonCardProps) 
       <Skeleton className="skeleton-season-text" />
       <Skeleton className="skeleton-season-text short" />
     </div>
-    <Skeleton className="skeleton-season-arrow" />
   </div>
 )
 

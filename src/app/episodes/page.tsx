@@ -98,10 +98,18 @@ const EpisodesPage = () => {
               className="episode-row"
             >
               <div className="episode-thumb-wrap">
-                <div
-                  className="episode-thumb"
-                  style={{ backgroundImage: `url(${episode.thumbnail || '/logo.svg'})` }}
-                />
+                {episode.thumbnail ? (
+                  <div
+                    className="episode-thumb"
+                    style={{ backgroundImage: `url(${episode.thumbnail})` }}
+                  />
+                ) : (
+                  <div className="episode-thumb episode-thumb-fallback">
+                    <span className="episode-fallback-number">
+                      {episode.number ?? index + 1}
+                    </span>
+                  </div>
+                )}
                 <span className="episode-number-badge">
                   {episode.number ?? index + 1}
                 </span>
@@ -116,11 +124,6 @@ const EpisodesPage = () => {
                 {episode.synopsis && (
                   <p className="episode-synopsis">{episode.synopsis}</p>
                 )}
-              </div>
-              <div className="episode-play-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
               </div>
             </Link>
           ))}
