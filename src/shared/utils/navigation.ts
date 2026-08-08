@@ -1,19 +1,16 @@
 export const isDirectPlayerUrl = (url: string): boolean => {
   if (!url) return false
   
-  // Direct link checking for URLs that should open player straight away
-  // Pattern 1: https://animesalt.ro/rest-url (where rest-url does NOT start with 'anime/')
-  // Pattern 2: https://animesalt.ro/anime/rest-url (explicit anime episode links)
   try {
     const parsed = new URL(url)
     const pathname = parsed.pathname.replace(/\/$/, '')
     
-    if (parsed.hostname.includes('animesalt.ro') && pathname) {
+    // If it's an animesalt.ro link and DOES NOT start with /anime/ (e.g. /doraemon-1979-season-1/)
+    if (parsed.hostname.includes('animesalt.ro') && pathname && !pathname.startsWith('/anime/')) {
       return true
     }
   } catch {
-    // If not a full valid URL string but contains animesalt.ro path structure
-    if (url.includes('animesalt.ro/')) {
+    if (url.includes('animesalt.ro/') && !url.includes('animesalt.ro/anime/')) {
       return true
     }
   }

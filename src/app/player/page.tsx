@@ -67,12 +67,16 @@ const PlayerPage = () => {
       return
     }
 
+    const controller = new AbortController()
+
     const fetchPlayer = async () => {
       setLoading(true)
       setError('')
 
       try {
-        const res = await fetch(`${API_URL}/api/player?url=${encodeURIComponent(episodeUrl)}`)
+        const res = await fetch(`${API_URL}/api/player?url=${encodeURIComponent(episodeUrl)}`, {
+          signal: controller.signal,
+        })
         if (!res.ok) {
           throw new Error(`Unable to load player: ${res.status}`)
         }
@@ -129,44 +133,109 @@ const PlayerPage = () => {
           setSelectedAudio(defaultAudio)
         }
       } catch (fetchError) {
+        if ((fetchError as any)?.name === 'AbortError' || controller.signal.aborted) return
         setError(fetchError instanceof Error ? fetchError.message : 'Unable to load player data.')
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchPlayer()
+
+    return () => {
+      controller.abort('Component unmounted or effect re-ran')
+    }
   }, [episodeUrl])
 
-  // Sync audio and video control events
-  const handlePlay = () => {
-    setIsPlaying(true)
-    if (audioRef.current && selectedAudio) {
-      audioRef.current.play().catch(() => {})
-    }
-  }
+  // Sync audio and video control events cleanly including network buffering & lag
+  useEffect(() => {
+    const video = videoRef.current
+    const audio = audioRef.current
 
-  const handlePause = () => {
-    setIsPlaying(false)
-    if (audioRef.current) {
-      audioRef.current.pause()
-    }
-  }
+    if (!video) return
 
-  const handleSeeking = () => {
-    if (videoRef.current && audioRef.current && selectedAudio) {
-      audioRef.current.currentTime = videoRef.current.currentTime
-    }
-  }
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current && audioRef.current && selectedAudio) {
-      const diff = Math.abs(videoRef.current.currentTime - audioRef.current.currentTime)
-      if (diff > 0.25) {
-        audioRef.current.currentTime = videoRef.current.currentTime
+    const syncPlay = () => {
+      setIsPlaying(true)
+      if (audio && selectedAudio) {
+        audio.play().catch(() => {})
       }
     }
-  }
+
+    const syncPause = () => {
+      setIsPlaying(false)
+      if (audio) {
+        audio.pause()
+      }
+    }
+
+    const syncWaiting = () => {
+      // When video pauses/buffers due to network lag, pause audio immediately
+      if (audio) {
+        audio.pause()
+      }
+    }
+
+    const syncPlaying = () => {
+      setIsPlaying(true)
+      if (audio && selectedAudio) {
+        audio.currentTime = video.currentTime
+        audio.play().catch(() => {})
+      }
+    }
+
+    const syncSeeking = () => {
+      if (audio && selectedAudio) {
+        audio.pause()
+        audio.currentTime = video.currentTime
+      }
+    }
+
+    const syncSeeked = () => {
+      if (audio && selectedAudio && !video.paused) {
+        audio.currentTime = video.currentTime
+        audio.play().catch(() => {})
+      }
+    }
+
+    const syncTimeUpdate = () => {
+      if (audio && selectedAudio && !video.paused) {
+        const diff = Math.abs(video.currentTime - audio.currentTime)
+        if (diff > 0.2) {
+          audio.currentTime = video.currentTime
+        }
+      }
+    }
+
+    const syncRateChange = () => {
+      if (audio) {
+        audio.playbackRate = video.playbackRate
+      }
+    }
+
+    video.addEventListener('play', syncPlay)
+    video.addEventListener('playing', syncPlaying)
+    video.addEventListener('pause', syncPause)
+    video.addEventListener('waiting', syncWaiting)
+    video.addEventListener('stalled', syncWaiting)
+    video.addEventListener('seeking', syncSeeking)
+    video.addEventListener('seeked', syncSeeked)
+    video.addEventListener('timeupdate', syncTimeUpdate)
+    video.addEventListener('ratechange', syncRateChange)
+
+    return () => {
+      video.removeEventListener('play', syncPlay)
+      video.removeEventListener('playing', syncPlaying)
+      video.removeEventListener('pause', syncPause)
+      video.removeEventListener('waiting', syncWaiting)
+      video.removeEventListener('stalled', syncWaiting)
+      video.removeEventListener('seeking', syncSeeking)
+      video.removeEventListener('seeked', syncSeeked)
+      video.removeEventListener('timeupdate', syncTimeUpdate)
+      video.removeEventListener('ratechange', syncRateChange)
+    }
+  }, [selectedAudio])
 
   const handleVideoChange = (video: StreamItem) => {
     const currentTime = videoRef.current ? videoRef.current.currentTime : 0
@@ -178,7 +247,7 @@ const PlayerPage = () => {
           videoRef.current.play().catch(() => {})
         }
       }
-    }, 100)
+    }, 50)
   }
 
   const handleAudioChange = (audio: AudioItem) => {
@@ -187,11 +256,11 @@ const PlayerPage = () => {
     setTimeout(() => {
       if (audioRef.current) {
         audioRef.current.currentTime = currentTime
-        if (isPlaying) {
+        if (isPlaying && videoRef.current && !videoRef.current.paused) {
           audioRef.current.play().catch(() => {})
         }
       }
-    }, 100)
+    }, 50)
   }
 
   const availableVideos = player.video && player.video.length > 0 ? player.video : player.streams || []
@@ -255,16 +324,11 @@ const PlayerPage = () => {
             <video
               ref={videoRef}
               controls
-              autoPlay
               playsInline
               muted={!!selectedAudio}
               poster={player.poster}
               className="video-player"
               src={selectedVideo?.url || undefined}
-              onPlay={handlePlay}
-              onPause={handlePause}
-              onSeeking={handleSeeking}
-              onTimeUpdate={handleTimeUpdate}
             />
             {selectedAudio && (
               <audio

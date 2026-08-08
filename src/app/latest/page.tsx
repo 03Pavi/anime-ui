@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { API_URL } from '@/config/api'
 import { SkeletonCard } from '@/shared/ui'
+import { getTargetNavigationUrl } from '@/shared/utils/navigation'
+import Link from 'next/link'
 
 type LatestAnime = {
   title: string
@@ -18,9 +20,13 @@ const LatestPage = () => {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchLatest = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/latest`)
+        const res = await fetch(`${API_URL}/api/latest`, {
+          signal: controller.signal,
+        })
         if (!res.ok) {
           throw new Error(`Failed to load latest: ${res.status}`)
         }
@@ -37,13 +43,20 @@ const LatestPage = () => {
           }))
         )
       } catch (fetchError) {
+        if ((fetchError as any)?.name === 'AbortError' || controller.signal.aborted) return
         setError(fetchError instanceof Error ? fetchError.message : 'Unable to load latest releases.')
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchLatest()
+
+    return () => {
+      controller.abort('Component unmounted or effect re-ran')
+    }
   }, [])
 
   return (
@@ -68,7 +81,7 @@ const LatestPage = () => {
       {!loading && !error && (
         <div className="latest-grid">
           {latest.map((item, index) => (
-            <a key={`${item.title}-${index}`} href={item.url} className="latest-card" target="_blank" rel="noreferrer">
+            <Link key={`${item.title}-${index}`} href={getTargetNavigationUrl(item.url)} className="latest-card">
               <div className="latest-card-image" style={{ backgroundImage: `url(${item.image})` }} />
               <div className="latest-card-content">
                 <h3>{item.title}</h3>
@@ -80,7 +93,7 @@ const LatestPage = () => {
                   <div className="latest-genres">{item.genres.slice(0, 3).join(' · ')}</div>
                 )}
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}

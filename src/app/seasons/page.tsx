@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { API_URL } from '@/config/api'
 import { SkeletonSeasonCard } from '@/shared/ui'
+import { isDirectPlayerUrl, getTargetNavigationUrl } from '@/shared/utils/navigation'
 
 type SeasonItem = {
   title: string
@@ -47,12 +48,16 @@ const SeasonsPage = () => {
       return
     }
 
+    const controller = new AbortController()
+
     const fetchSeasons = async () => {
       setLoading(true)
       setError('')
 
       try {
-        const res = await fetch(`${API_URL}/api/seasons?url=${encodeURIComponent(animeUrl)}`)
+        const res = await fetch(`${API_URL}/api/seasons?url=${encodeURIComponent(animeUrl)}`, {
+          signal: controller.signal,
+        })
         if (!res.ok) {
           throw new Error(`Unable to load seasons: ${res.status}`)
         }
@@ -72,13 +77,20 @@ const SeasonsPage = () => {
           }))
         )
       } catch (fetchError) {
+        if ((fetchError as any)?.name === 'AbortError' || controller.signal.aborted) return
         setError(fetchError instanceof Error ? fetchError.message : 'Unable to load seasons.')
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchSeasons()
+
+    return () => {
+      controller.abort('Component unmounted or effect re-ran')
+    }
   }, [animeUrl])
 
   const displayTitle = detail?.title || detail?.alterTitle || 'Anime Details'
@@ -146,12 +158,17 @@ const SeasonsPage = () => {
 
       {!loading && !error && seasons.length > 0 && (
         <div className="seasons-grid seasons-card-grid">
-          {seasons.map((season, index) => (
-            <Link
-              key={`${season.title}-${index}`}
-              href={`/episodes?url=${encodeURIComponent(season.url)}&title=${encodeURIComponent(season.title)}`}
-              className="season-card"
-            >
+          {seasons.map((season, index) => {
+            const targetHref = isDirectPlayerUrl(season.url)
+              ? `/player?url=${encodeURIComponent(season.url)}`
+              : `/episodes?url=${encodeURIComponent(season.url)}&title=${encodeURIComponent(season.title)}`
+
+            return (
+              <Link
+                key={`${season.title}-${index}`}
+                href={targetHref}
+                className="season-card"
+              >
               <div
                 className="season-card-thumb"
                 style={{ backgroundImage: `url(${season.thumbnail || '/logo.svg'})` }}
@@ -167,8 +184,9 @@ const SeasonsPage = () => {
                   <p className="season-synopsis">{season.synopsis}</p>
                 )}
               </div>
-            </Link>
-          ))}
+              </Link>
+          )
+        })}
         </div>
       )}
     </main>

@@ -28,12 +28,16 @@ const EpisodesPage = () => {
       return
     }
 
+    const controller = new AbortController()
+
     const fetchEpisodes = async () => {
       setLoading(true)
       setError('')
 
       try {
-        const res = await fetch(`${API_URL}/api/episodes?url=${encodeURIComponent(seasonUrl)}`)
+        const res = await fetch(`${API_URL}/api/episodes?url=${encodeURIComponent(seasonUrl)}`, {
+          signal: controller.signal,
+        })
         if (!res.ok) {
           throw new Error(`Unable to load episodes: ${res.status}`)
         }
@@ -53,13 +57,20 @@ const EpisodesPage = () => {
           }))
         )
       } catch (fetchError) {
+        if ((fetchError as any)?.name === 'AbortError' || controller.signal.aborted) return
         setError(fetchError instanceof Error ? fetchError.message : 'Unable to load episodes.')
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchEpisodes()
+
+    return () => {
+      controller.abort('Component unmounted or effect re-ran')
+    }
   }, [seasonUrl])
 
   return (

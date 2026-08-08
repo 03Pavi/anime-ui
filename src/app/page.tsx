@@ -128,12 +128,16 @@ const Page = () => {
   }
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchLatest = async () => {
       setLatestLoading(true)
       setLatestError('')
 
       try {
-        const response = await fetch(`${API_URL}/api/latest`)
+        const response = await fetch(`${API_URL}/api/latest`, {
+          signal: controller.signal,
+        })
         if (!response.ok) {
           throw new Error(`Latest releases failed: ${response.status}`)
         }
@@ -152,13 +156,20 @@ const Page = () => {
           }))
         )
       } catch (fetchError) {
+        if ((fetchError as any)?.name === 'AbortError' || controller.signal.aborted) return
         setLatestError(fetchError instanceof Error ? fetchError.message : 'Unable to load latest releases.')
       } finally {
-        setLatestLoading(false)
+        if (!controller.signal.aborted) {
+          setLatestLoading(false)
+        }
       }
     }
 
     fetchLatest()
+
+    return () => {
+      controller.abort('Component unmounted or effect re-ran')
+    }
   }, [])
 
   const clearSearch = () => {
@@ -204,10 +215,12 @@ const Page = () => {
               onChange={(event) => {
                 const value = event.target.value
                 setQuery(value)
+                if (searchPerformed) {
+                  setSearchPerformed(false)
+                }
               }}
               placeholder="Search anime titles, characters, or series"
               aria-label="Search anime"
-              readOnly={loading}
             />
             {searchPerformed ? (
               <button type="button" className="search-submit" onClick={clearSearch}>
