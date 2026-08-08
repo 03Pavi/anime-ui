@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
   --bg-base: #04070f;
@@ -482,9 +482,10 @@ a {
   background: #000;
 }
 
-.player-sidebar {
-  display: flex;
-  flex-direction: column;
+.player-sidebar,
+.player-sidebar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -494,6 +495,18 @@ a {
   border-radius: 1.5rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.active-res-badge {
+  background: rgba(79, 123, 255, 0.2);
+  border-color: rgba(79, 123, 255, 0.4);
+  color: #8bb2ff;
+}
+
+.active-audio-badge {
+  background: rgba(245, 64, 89, 0.2);
+  border-color: rgba(245, 64, 89, 0.4);
+  color: #ff8aa1;
 }
 
 .player-meta h2 {
@@ -513,7 +526,7 @@ a {
 
 .quality-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 0.85rem;
 }
 

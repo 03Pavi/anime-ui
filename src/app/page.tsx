@@ -4,6 +4,7 @@ import { SkeletonCard } from '@/shared/ui'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { API_URL } from '@/config/api'
+import { getTargetNavigationUrl } from '@/shared/utils/navigation'
 import Link from 'next/link'
 
 type AnimeItem = {
@@ -250,7 +251,7 @@ const Page = () => {
                   {results.map((anime, index) => (
                     <Link
                       key={`${anime.title}-${index}`}
-                      href={`/seasons?url=${encodeURIComponent(anime.url)}&q=${encodeURIComponent(query)}`}
+                      href={getTargetNavigationUrl(anime.url, { query })}
                       className="anime-card"
                     >
                       <div className="card-image" style={{ backgroundImage: `url(${anime.thumbnail || '/logo.svg'})` }} />
@@ -340,7 +341,7 @@ const Page = () => {
                 {latest.map((item, index) => (
                   <Link
                     key={`${item.title}-${index}`}
-                    href={`/seasons?url=${encodeURIComponent(item.url)}`}
+                    href={getTargetNavigationUrl(item.url)}
                     className="latest-card"
                   >
                     <div
