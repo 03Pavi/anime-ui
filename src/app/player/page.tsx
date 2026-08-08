@@ -387,7 +387,7 @@ const PlayerPage = () => {
           </div>
           <div className="related-grid">
             {player.relatedEpisodes
-              .filter((item) => item?.type !== 'Movie')
+              // .filter((item) => item?.type !== 'Movie')
               .map((episode, index) => (
                 <a
                   key={`${episode.title}-${index}`}
