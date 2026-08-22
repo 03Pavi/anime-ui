@@ -1433,3 +1433,70 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+.player-fallback-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  border-radius: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  animation: fadeIn 0.4s ease-out;
+
+  .fallback-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .fallback-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+    justify-content: space-between;
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.fallback-link-button {
+  padding: 0.6rem 1.2rem;
+  background: #ffc107;
+  color: #000;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

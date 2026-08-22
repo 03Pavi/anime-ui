@@ -58,6 +58,7 @@ const PlayerPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
+  const [showDirectLink, setShowDirectLink] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -237,6 +238,45 @@ const PlayerPage = () => {
     }
   }, [selectedAudio])
 
+  // Monitor stream playback speed and offer direct link if it takes > 10 seconds to play
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !selectedVideo) {
+      setShowDirectLink(false)
+      return
+    }
+
+    setShowDirectLink(false)
+
+    // Define 10 second timeout
+    const timer = setTimeout(() => {
+      // If video has not successfully played or is stalling, show direct link option
+      if (video.paused || video.seeking || video.readyState < 3) {
+        setShowDirectLink(true)
+      }
+    }, 10000)
+
+    const handlePlaying = () => {
+      // Clear link message immediately if video successfully starts playing
+      clearTimeout(timer)
+      setShowDirectLink(false)
+    }
+
+    video.addEventListener('playing', handlePlaying)
+    video.addEventListener('play', handlePlaying)
+    video.addEventListener('waiting', () => {
+      // If it enters buffering again, we can also set the timeout to offer the direct link
+      clearTimeout(timer)
+    })
+
+    return () => {
+      clearTimeout(timer)
+      video.removeEventListener('playing', handlePlaying)
+      video.removeEventListener('play', handlePlaying)
+    }
+  }, [selectedVideo])
+
+
   const handleVideoChange = (video: StreamItem) => {
     const currentTime = videoRef.current ? videoRef.current.currentTime : 0
     setSelectedVideo(video)
@@ -338,6 +378,23 @@ const PlayerPage = () => {
               />
             )}
           </div>
+
+          {showDirectLink && selectedVideo && (
+            <div className="player-fallback-banner">
+              <span className="fallback-icon">⚠️</span>
+              <div className="fallback-content">
+                <p>Stream taking too long to load? You can open the direct video link in a new window:</p>
+                <a
+                  href={selectedVideo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fallback-link-button"
+                >
+                  Open Stream in New Tab
+                </a>
+              </div>
+            </div>
+          )}
 
           <div className="player-sidebar-grid">
             <div className="quality-controls">
